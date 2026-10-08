@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hinter den Türen</title>
+<style>
+:root{--bg:#080709;--panel:#121014;--text:#eee9ec;--muted:#aaa1a8;--accent:#b99aa8;--line:#302a30}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% 20%,#211921 0,#0b090b 42%,#050405 100%);color:var(--text);font-family:Georgia,"Times New Roman",serif;min-height:100vh}
+button{font:inherit;color:inherit}
+#app{max-width:760px;margin:auto;min-height:100vh;padding:28px 18px 34px}
+.screen{animation:fade .45s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1,h2{font-weight:400;letter-spacing:.04em}
+h1{font-size:clamp(30px,8vw,52px);text-align:center;margin:18px 0 10px}
+h2{font-size:clamp(24px,6vw,36px);margin:0 0 18px}
+.lead,.story{font-size:18px;line-height:1.75}
+.lead{text-align:center;color:#ddd3d9}
+.story{white-space:pre-line}
+.card{background:rgba(18,16,20,.82);border:1px solid var(--line);border-radius:18px;padding:22px;margin:18px 0;box-shadow:0 18px 55px #0008}
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.door,.choice,.next{background:linear-gradient(145deg,#171318,#0d0b0e);border:1px solid #383038;border-radius:15px;padding:17px;text-align:left;cursor:pointer;transition:.2s}
+.door:hover,.choice:hover,.next:hover{transform:translateY(-2px);border-color:#6e5966;background:#1b161c}
+.door .icon{font-size:27px;display:block;margin-bottom:7px}.door b{display:block;font-weight:400}.door small{color:var(--muted)}
+.choice{display:block;width:100%;margin:11px 0;font-size:17px}
+.next{display:inline-block;margin-top:16px;text-align:center}
+.back{background:none;border:0;color:#bdb3ba;padding:12px 0;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.kicker{text-align:center;color:#9e929a;text-transform:uppercase;letter-spacing:.18em;font-size:12px}
+.quote{border-left:2px solid var(--accent);padding-left:16px;color:#e6dce2;font-style:italic}
+.end{text-align:center}
+@media(max-width:520px){.doors{grid-template-columns:1fr}.lead,.story{font-size:17px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const doors=[
+{title:"Der Mensch hinter der Maske",icon:"🪞",intro:`Du hast mich kennengelernt, ohne meine ganze Geschichte zu kennen. Und trotzdem hast du mir irgendwann deine Nummer gegeben. Vielleicht fragst du dich, warum genau das bei mir so viel ausgelöst hat. Du hast drei Möglichkeiten. Aber welche du zuerst öffnest, entscheidest nur du.`,choices:[
+["🪞","Was du in mir gesehen hast",`Keine Ahnung, was du damals an mir gesehen hast. Vielleicht war es einfach Interesse. Vielleicht meine Art, mit dir zu reden. Vielleicht etwas, das ich selbst längst nicht mehr wahrgenommen habe.
+
+Aber ich halte es bis heute für eine ziemlich fragwürdige Entscheidung, Liebes. 🤭🖤
+
+Denn du konntest damals unmöglich wissen, was alles hinter mir liegt. Und trotzdem hast du mich nicht wie ein Wrack behandelt, das irgendwann auseinanderfällt.
+
+Du hast mich einfach als Menschen wahrgenommen. Und vielleicht war genau das etwas, das ich selbst schon lange vergessen hatte.`],
+["🔐","Was ich dir damals erzählt habe",`Dann gibt es da noch etwas, das ich dir damals ziemlich früh gezeigt habe.
+
+Ich habe dir nicht einfach erzählt, was ich gerne esse oder welchen Blödsinn ich den ganzen Tag mache. 😂 Ich habe dir Dinge von mir erzählt, bei denen ich nicht wusste, ob du danach überhaupt noch mit mir reden möchtest.
+
+Ein Teil von mir hat wahrscheinlich genau darauf gewartet, dass du irgendwann sagst: „Okay… das ist mir zu viel.“
+
+Aber du hast etwas getan, womit ich ehrlich gesagt nicht gerechnet hatte.
+
+Du hast es nicht schön geredet. Du hast gesagt, dass du einiges erstmal verdauen musst. Aber du bist trotzdem geblieben.
+
+Und vielleicht war genau das einer der ersten Momente, in denen ich angefangen habe, dir wirklich zu glauben. 🖤`],
+["🖤","Was ich damals selbst über mich geglaubt habe",`Vielleicht ist das die Wahrheit, die ich damals selbst am wenigsten sehen konnte.
+
+Ich habe mich lange nicht einfach als jemanden gesehen, der schwierige Dinge erlebt hat. Ich habe mich irgendwann selbst durch meine kaputten Stellen definiert.
+
+Als müsste ich nur einmal die falsche Entscheidung treffen und alles würde endgültig auseinanderfallen.
+
+Und dann kamst du. Nicht mit einem „Alles wird gut“. Nicht mit dem Versuch, mich zu reparieren. Du hast einfach weiter mit mir geredet. Wolltest mich kennenlernen. Hast mir sogar deine Nummer gegeben.
+
+Und irgendwo zwischen all dem fing ich an zu denken: Vielleicht bin ich doch nicht das Wrack, für das ich mich manchmal halte.
+
+Vielleicht bin ich einfach ein Mensch, der verdammt viel abbekommen hat – und trotzdem noch fühlen kann. 🖤`]
+]},
+{title:"Wann wurde aus uns mehr?",icon:"❤️",intro:`Die zweite Tür öffnet sich.
+
+Manchmal merkt man nicht, wann etwas beginnt.
+
+Es gibt keinen einzelnen Moment, an dem plötzlich alles anders ist.
+
+Man schreibt. Man lacht. Man erzählt sich immer mehr. Man vermisst sich irgendwann… und bemerkt erst später, dass aus einem Menschen, mit dem man gerne redet, jemand geworden ist, auf dessen Nachricht man wartet.
+
+Bei uns war es ziemlich genau so. 🖤`,choices:[
+["💬","Was mich an unseren Gesprächen erwischt hat",`Ich glaube, bevor ich überhaupt verstanden habe, dass ich Gefühle für dich entwickle, war da dieses verdammt gute Gefühl beim Schreiben mit dir.
+
+Du warst offen. Ehrlich. Wir haben mehr Gemeinsamkeiten gefunden, als ich erwartet hätte.
+
+Und irgendwie fühlte es sich mit dir nie so an, als müsste einer von uns über oder unter dem anderen stehen.
+
+Wir waren einfach auf Augenhöhe.
+
+Vielleicht war genau das der Anfang. Nicht ein großer Moment. Sondern dieses leise Gefühl von: „Scheiße… mit dieser Frau kann ich einfach ich selbst sein.“ 🖤`],
+["🪞","Warum Augenhöhe für mich so wichtig war",`Bei dir hatte ich nie das Gefühl, dass einer von uns den anderen retten oder über ihm stehen müsste.
+
+Du hast mich nicht wie ein Problem behandelt, das gelöst werden muss.
+
+Ich konnte einfach Mensch sein. Und du warst es auch.
+
+Vielleicht klingt Augenhöhe nach einem kleinen Wort. Für mich war es das nicht.`],
+["❤️","Der Moment, an dem ich merkte, dass du mir fehlst",`Ich glaube, bei mir fing das Vermissen an, als unser Schreiben plötzlich nicht mehr nur aus Gesprächen bestand.
+
+Da kamen diese TikToks. Kleine Videos, die eigentlich nur ein paar Sekunden dauern – und trotzdem plötzlich verdammt viel zwischen den Zeilen gesagt haben.
+
+„Nie wieder ohneeinander.“
+Wertschätzung.
+Vermissen.
+Kleine Gesten, die einem zeigen: Du bist mir wichtig.
+
+Und irgendwann merkte ich, dass ich nicht mehr nur auf deine Nachrichten gewartet habe. Ich habe angefangen, auf dich zu warten.
+
+Nicht auf irgendeine Nachricht. Auf deine Art zu schreiben. Auf deinen Humor. Auf deine kleinen Gedanken. Auf dieses Gefühl, dass gerade irgendwo Jessi sitzt und sich entschieden hat, einen Teil ihres Moments mit mir zu teilen. 🖤
+
+Als ich dieses TikTok gesehen habe, war mein erster Gedanke nicht besonders poetisch. 😂
+„Gott sei Dank… ich fühle nicht nur ich so.“
+
+Denn bis dahin hatte ich diese Gefühle längst. Ich wusste nur nicht, ob ich ihnen trauen durfte.
+
+Und plötzlich stand da dieser eine Satz von dir, der etwas ausgesprochen hat, was bis dahin nur zwischen den Zeilen existiert hatte.
+
+Das war für mich kein Beweis, dass du mich liebst. Aber es war der Moment, in dem ich dachte: Vielleicht sind wir beide gerade an genau demselben verdammt gefährlichen Punkt angekommen. 🖤`]
+]},
+{title:"Die vielen Jessis",icon:"🖤",intro:`Vielleicht gibt es gar nicht die eine Jessi.
+
+Vielleicht gibt es die, die lacht. Die, die schweigt. Die, die sich fallen lässt. Die, die sich zurückzieht. Die, die völlig bekloppt sein kann… und die, die manchmal einfach nur ihre Ruhe braucht.
+
+Und vielleicht liegt genau darin etwas, das ich an dir liebe.
+
+Du bist keine einzelne Version von dir. 🖤`,choices:[
+["❤️","Die Jessi, die sich fallen lässt",`Wenn du dich mir gegenüber wirklich fallen gelassen hast, war da etwas, das ich schwer erklären kann. Wärme. Zuneigung. Und verdammt viel Respekt dafür, dass du mir Gefühle gezeigt hast, die du nicht jedem Menschen zeigst.
+
+In diesen Momenten hatte ich das Gefühl, dich wirklich sehen zu dürfen. Nicht die vorsichtige Jessi, die jedes Wort dreimal prüft. Sondern die Jessi, die fühlt, vertraut und sich für einen Moment nicht versteckt.
+
+Und genau diese Jessi hat mein Herz erobert, ohne dass ich auch nur irgendetwas dagegen tun konnte. 🖤`],
+["🌙","Die stille Jessi",`Auch die stille Jessi gehört für mich zu dir. Sie erinnert mich daran, dass du kein Mensch bist, der ständig funktionieren muss. Du darfst müde sein. Du darfst dich zurückziehen. Du darfst einfach mal nichts können und nichts erklären wollen.
+
+Und manchmal glaube ich, würde mir von dieser Jessi gar keine Antwort reichen.
+
+Vielleicht nur eine ehrliche Umarmung.
+
+Eine, bei der keiner irgendetwas sagen muss. Bei der ich einfach für einen Moment weiß: Du bist da. Und ich darf auch einfach da sein. 🖤`],
+["😂","Die völlig bekloppte Jessi",`Und dann gibt es noch diese Jessi, mit der ich einfach komplett bekloppt sein kann. 😂
+
+Wir können aus einem einzigen Satz irgendeinen völligen Unsinn in unseren Köpfen erschaffen und uns gegenseitig immer weiter reinsteigern.
+
+Das Schöne daran ist nicht einmal der Witz selbst. Es ist, dass wir beide verstehen, was der andere eigentlich ausdrücken will – und statt den Gedanken sterben zu lassen, steigen wir einfach ein.
+
+Eine Idee wird zur nächsten, aus einem kleinen Spaß wird irgendeine völlig bescheuerte Geschichte… und plötzlich sitzen da zwei Erwachsene und benehmen sich geistig wie zwölf.
+
+Und genau das liebe ich daran. Weil ich bei dir nicht erklären muss, warum etwas lustig ist. Du verstehst es einfach. Und gehst mit. 😂🖤`]
+],close:`Vielleicht ist die eigentliche Antwort nicht eine davon.
+
+Ich liebe nicht nur die Jessi, die mir mein Herz gezeigt hat. Nicht nur die, mit der ich lachen und völligen Unsinn bauen kann. Und auch nicht nur die stille Jessi, die manchmal einfach ihre Ruhe braucht.
+
+Ich liebe, dass du all das sein kannst.
+
+Du musst dich für mich nicht auf eine Version festlegen. 🖤`},
+{title:"Warum ich dir Romane schreibe",icon:"📝",intro:`Du hast dich vielleicht schon öfter gefragt, warum ich aus drei Sätzen plötzlich einen halben Roman mache.
+
+Die einfache Antwort wäre: Weil ich zu viel zu sagen habe.
+
+Aber eigentlich steckt dahinter mehr.
+
+Manche Dinge kann ich schreiben, die ich dir niemals genauso sagen könnte.
+
+Und manchmal ist Schreiben für mich die einzige Art, etwas herauszulassen, ohne dabei das Gefühl zu haben, mich komplett auszuliefern. 🖤`,choices:[
+["📝","Ich habe zu viel zu sagen",`Manchmal habe ich einfach zu viele Gedanken gleichzeitig. Ich möchte dir mehrere Dinge erzählen, bevor der Moment wieder vorbei ist.
+
+Und vielleicht steckt auch die Angst dahinter, etwas Wichtiges nicht gesagt zu haben, bevor sich wieder eine Gelegenheit schließt.
+
+Also schreibe ich. Viel zu viel. 😂
+
+Nicht, damit du alles beantworten musst. Sondern weil es mir wichtig ist, dass ich es dir einmal gesagt habe.`],
+["🖤","Schreiben ist leichter als reden",`Manchmal schreibe ich dir Dinge, die ich dir niemals so sagen könnte. Nicht weil ich sie nicht sagen will – sondern weil ich beim Schreiben weinen darf, ohne dass du siehst, wie sehr mich meine eigenen Worte gerade treffen.
+
+Beim Schreiben kann ich meine Gedanken sortieren. Ich kann ehrlich sein, ohne mitten im Satz den Faden zu verlieren.
+
+Und du musst dabei nicht einmal etwas reparieren.`],
+["❤️","Was ich eigentlich mit meinen Texten erreichen will",`Eigentlich ist mein Ziel viel kleiner, als meine Romane vermuten lassen.
+
+Ich möchte, dass du weißt, dass du mir wichtig bist.
+
+Ich möchte dir zeigen, dass du nicht alleine bist, wenn du jemanden zum Reden oder Zuhören brauchst.
+
+Und manchmal möchte ich dir einfach einen kleinen Moment schenken, in dem du lächelst.
+
+Ich brauche dafür keine gleich große Antwort. Wenn ich weiß, dass du wegen meiner Worte gelächelt oder gelacht hast, ist das für mich schon verdammt viel. 🖤`]
+]},
+{title:"Wenn mein Kopf übernimmt",icon:"🧠",intro:`Das hier ist wahrscheinlich der Teil von mir, den ich selbst am wenigsten mag.
+
+Nicht weil ich dir nicht vertraue.
+
+Sondern weil mein Kopf manchmal Dinge aus wenigen Stunden Abstand macht, für die es eigentlich überhaupt keinen Grund gibt.
+
+„Was, wenn ich dir nicht mehr wichtig bin?“
+
+„Was, wenn ich mich in allem geirrt habe?“
+
+Und irgendwann wird aus einem kleinen Gedanken eine ganze Geschichte.
+
+Willkommen in meinem Kopf. 🖤`,choices:[
+["🧠","Wenn mein Kopf anfängt",`Das Schlimmste, was mein Kopf mir erzählen kann, ist nicht, dass du heute weniger schreibst.
+
+Es ist der Gedanke, dass ich dir vielleicht gar nicht so wichtig bin, wie du es mir in deinen gefühlvollen Worten sagst.
+
+Dass ich deine Worte ernst nehme, während mein Kopf irgendwann anfängt, nach Beweisen dafür zu suchen, dass sie vielleicht doch nicht stimmen.
+
+Und genau da wird aus ein paar Stunden Abstand plötzlich die Angst, dass ich mich in allem geirrt haben könnte. 🖤
+
+Wenn mein Kopf anfängt, zweifle ich nicht einfach blind. Ich versuche sogar, mich selbst wieder zurückzuholen. Ich suche nach all den Dingen, die dafür sprechen, dass ihre Worte echt sind.
+
+„Schau doch. Das würde sie nicht sagen, wenn es ihr egal wäre.“
+
+Und für einen Moment glaube ich mir selbst.
+
+Dann kommt mein Kopf wieder mit dem nächsten „Was wäre, wenn…?“
+
+Vielleicht meint sie es ernst. Vielleicht will sie mich nur halten. Vielleicht vertraut sie mir wirklich. Vielleicht bin ich nur eine Option.
+
+Und irgendwann merke ich: Ich suche gar nicht mehr nach der Wahrheit. Ich versuche nur noch, eine Angst zu widerlegen, die immer eine neue Möglichkeit findet. 🖤`],
+["🌊","Das Becken",`Verdrängen bedeutet bei mir nicht, dass ein Gedanke weg ist. Er schwimmt einfach weiter irgendwo zwischen all den anderen Gedanken herum. Musik hilft mir, ihn nicht anzusehen. Ablenkung hilft mir, ihn nicht zu hören. Manchmal wird er sogar durch einen anderen Gedanken ersetzt.
+
+Aber manchmal sammelt sich alles irgendwo in mir. Wie Wasser in einem Becken. Tropfen für Tropfen.
+
+Und irgendwann ist es voll.
+
+Dann reicht manchmal ein einziger kleiner Gedanke und alles läuft über. Und plötzlich hinterfrage ich nicht mehr nur dich oder das, was zwischen uns passiert. Dann hinterfrage ich mich selbst. Meine Wahrnehmung. Meine Gefühle. Alles.`],
+["🖤","Was ich niemandem zeigen möchte",`Wenn mein Kopf mir wieder irgendeine Geschichte erzählt, versuche ich meistens, sie runterzuschlucken. Nicht weil sie mir egal ist. Sondern weil ich dich nicht wegen jedem kleinen Gedanken damit belasten möchte.
+
+Ich denke mir: Wie soll zwischen uns überhaupt etwas wachsen, wenn ich jede deiner Handlungen analysiere und aus jedem Abstand ein Zeichen mache?
+
+Also versuche ich, den Gedanken selbst auszuhalten. Ich versuche, zwischen dem zu unterscheiden, was wirklich passiert, und dem, was mein Kopf daraus macht.
+
+Das klappt nicht immer. Aber ich versuche es. Auch deinetwegen. 🖤`]
+]},
+{title:"Die Seite, die nichts mehr fühlen will",icon:"🌑",special:true,intro:`Es gibt eine Seite von mir, die irgendwann gelernt hat, dass nichts fühlen verdammt viel einfacher wäre.
+
+Keine Angst. Kein Vermissen. Keine Enttäuschung. Keine Hoffnung, die wieder zerbrechen kann.
+
+Eine Stimme aus der Dunkelheit flüstert:
+
+„Lass mich einfach machen. Dann kann dich niemand mehr verletzen.“
+
+Du könntest die Tür wieder schließen.
+
+Oder du kannst herausfinden, warum ich sie trotzdem nicht gewinnen lasse.`,choices:[
+["🌑","Ich will wissen, was sie mir verspricht.",`Sie verspricht mir Schutz.
+
+Keine Nähe mehr, die verloren gehen kann. Keine Hoffnung, die enttäuscht werden kann. Keine Gefühle, die mich nachts wachhalten.
+
+Sie sagt mir, dass Kälte einfacher wäre als Verletzlichkeit.
+
+Und manchmal klingt dieses Angebot verdammt verlockend.
+
+Aber Schutz hat einen Preis.
+
+Wenn ich nichts mehr fühle, verliere ich nicht nur den Schmerz. Ich verliere auch das, was ihn überhaupt erst möglich macht.`],
+["🖤","Ich will wissen, warum du sie aufhältst.",`Wenn diese Seite irgendwann wirklich gewinnt, verliert sie nicht nur meine Angst. Sie nimmt mir mein Herz.
+
+Und mit meinem Herz verschwinden irgendwann die Dinge, die mich menschlich machen: meine Freundlichkeit. Meine Hilfsbereitschaft. Meine Fähigkeit zu lieben. Vielleicht sogar der Wunsch, für jemanden da zu sein.
+
+Ich wäre vielleicht stärker. Kälter. Unverletzbarer.
+
+Aber wofür? Wenn ich dafür genau der Mensch werden müsste, der ich niemals sein wollte? 🖤
+
+Ich habe ihr nicht geglaubt.
+
+Ja, Menschen sind gegangen. Aber nicht jeder, der nicht mehr da ist, hat sich gegen mich entschieden. Manche Enden wurden uns einfach vom Leben aufgezwungen.
+
+Und solange irgendwo noch die Möglichkeit besteht, dass es Menschen gibt, die mich wirklich verstehen… die mich wirklich sehen und nicht nur meine Fehler…
+
+…werde ich mich nicht dafür entscheiden, nichts mehr zu fühlen. 🖤`]
+]},
+{title:"Was sie niemals für mich entscheiden darf",icon:"🚪",special:true,intro:`Es gibt eine Entscheidung, die ich niemals an meine Angst abgeben werde.
+
+Nicht an meine Vergangenheit. Nicht an meine dunkle Seite. Und auch nicht an die Angst davor, wieder jemanden zu verlieren.
+
+Die Entscheidung darüber, wen ich liebe.
+
+Denn solange ich selbst entscheide, kann ich mich verletzen.
+
+Aber wenigstens ist es meine Entscheidung. 🖤`,choices:[
+["❤️","Wen ich liebe",`Wenn du mich fragst, warum ich ausgerechnet dich so tief in mein Herz gelassen habe, kann ich dir darauf nicht einmal eine vernünftige Antwort geben.
+
+Ich hatte Beziehungen. Ich war mit Menschen zusammen. Aber wirklich geliebt habe ich in meinem Leben nur sehr wenige Menschen. Eigentlich vor dir nur einmal.
+
+Und vielleicht ist genau das der Unterschied.
+
+Denn irgendwann entscheidet bei mir nicht mehr mein Kopf. Nicht mehr das, was ich mit meinen Augen sehe. Nicht mehr irgendeine Liste aus Eigenschaften, Äußerlichkeiten oder Dingen, die vernünftig erscheinen.
+
+Irgendwann entscheidet mein Herz.
+
+Und wenn mein Herz im Spiel ist, dann ist es für mich echt.
+
+Weil ich dann nicht mehr nur darauf achte, was ein Mensch nach außen zeigt. Sondern auf das, was man nicht einfach mit den Augen sehen kann.
+
+Auf kleine Dinge. Auf Gesten. Auf Worte, die vielleicht gar nicht besonders gemeint waren und bei mir trotzdem etwas ausgelöst haben. Auf Momente, in denen ich etwas von dir gesehen oder gespürt habe, das du mir vielleicht nicht einmal bewusst zeigen wolltest.
+
+Und genau davon hast du mir verdammt viel gezeigt.
+
+Nicht immer absichtlich. Vielleicht wusstest du manchmal selbst gar nicht, was du mir gerade gezeigt hast.
+
+Aber ich habe es gesehen.
+
+Ich habe es gespürt.
+
+Und irgendwann war da einfach dieses Gefühl, bei dem mein Kopf nichts mehr zu entscheiden hatte.
+
+Da war nur noch mein Herz.
+
+Und das hatte sich längst für dich entschieden. 🖤`],
+["🚪","Wen ich in mein Leben lasse",`Ich glaube, bei dir war es nie diese eine Sache.
+
+Es war die Mischung aus allem.
+
+Die Art, wie du mit mir geredet hast. Dass du mich nicht auf meine Vergangenheit reduziert hast. Dass ich mit dir lachen, ernst sein und völligen Unsinn reden konnte, ohne ständig überlegen zu müssen, welche Version von mir gerade die richtige ist.
+
+Da war diese Augenhöhe zwischen uns. Dieses Gefühl, dass ich dir nichts vorspielen muss, um interessant genug zu sein.
+
+Und dann waren da die kleinen Dinge.
+
+Momente, in denen du mir etwas von dir gezeigt hast. Manchmal bewusst, manchmal wahrscheinlich völlig nebenbei. Dinge, die mir gezeigt haben, dass hinter deiner eigenen Fassade viel mehr steckt, als man auf den ersten Blick sehen würde.
+
+Irgendwann habe ich deshalb nicht mehr darüber nachgedacht, ob du einen Platz in meinem Leben bekommen solltest.
+
+Du hattest ihn längst.
+
+Ich glaube, Vertrauen funktioniert bei mir nicht wie eine Tür, die ich einfach für jeden aufmache.
+
+Manche Menschen stehen davor.
+
+Einige dürfen näher kommen.
+
+Und ganz wenige bekommen irgendwann den Schlüssel.
+
+Du hast nicht darum gebeten.
+
+Ich habe ihn dir gegeben.
+
+Und vielleicht ist genau das der Unterschied. 🖤`],
+["🖤","Wen ich draußen halte",`Ich glaube, man lernt irgendwann, Menschen zu lesen.
+
+Nicht perfekt. Aber gut genug, um einen Unterschied zu spüren.
+
+Ob jemand wirklich zuhört, weil er wissen will, was in dir vorgeht – oder ob er nur zuhört, weil er glaubt, es zu müssen.
+
+Und genau deshalb erzähle ich manche Dinge nicht einfach jedem.
+
+Wenn ich dir etwas wirklich Wichtiges von mir erzähle, dann bedeutet das, dass ich dir vertraue.
+
+Und dieses Vertrauen bekommt man bei mir nicht einfach so.
+
+Man muss sich seinen Platz in meinem Leben nicht mit großen Versprechen verdienen. Es sind die kleinen Dinge. Ehrlichkeit. Interesse. Augenhöhe. Das Gefühl, dass ich mich nicht ständig fragen muss, ob ich gerade zu viel von mir zeige.
+
+Viele Menschen bleiben deshalb draußen.
+
+Nicht, weil ich sie hasse.
+
+Sondern weil nicht jeder Zugang zu den Teilen von mir bekommen muss, die ich nicht jedem zeige.
+
+Und dann bist da du.
+
+Und wenn ich ganz ehrlich bin, weiß ich bis heute nicht einmal, wie du es geschafft hast, diese Grenze so verdammt schnell zu überwinden. 😂
+
+Ich weiß nur, dass du irgendwann nicht mehr vor dieser Tür standest.
+
+Du warst längst dahinter.
+
+Und ich hatte offenbar vergessen, den Schlüssel wieder einzustecken. 🤭🖤`]
+],close:`Vielleicht ist Freiheit nicht, niemals verletzt zu werden.
+
+Vielleicht bedeutet Freiheit manchmal einfach, selbst entscheiden zu dürfen, für wen man sein Herz riskiert.`},
+{title:"Was ich mich nicht traue zu sagen",icon:"🔓",special:true,intro:`Die letzte Tür ist anders.
+
+Sie ist nicht verschlossen.
+
+Sie steht bereits offen.
+
+Vielleicht ist das der Teil, den ich am liebsten übersprungen hätte.
+
+Nicht weil ich dir etwas verheimlichen möchte.
+
+Sondern weil manche Dinge leichter zu fühlen als auszusprechen sind.
+
+Also sage ich es dir einfach.`,choices:[
+["🖤","Weiter",`Manchmal frage ich mich, warum du mich so sehr auf Abstand hältst.
+
+Nicht, weil ich von dir eine Beziehung verlange. Nicht, weil ich erwarte, dass du mir irgendetwas zurückgibst.
+
+Ich wünschte mir manchmal einfach, dass du mich näher ranlässt.
+
+Nicht damit ich dich rette.
+Nicht damit du mir etwas schuldest.
+Sondern damit ich einfach da sein darf.
+
+Deine Schulter sein, wenn du dich ausweinen musst.
+Dich ablenken, wenn dein Kopf dich wieder auffrisst.
+Dir ein bisschen Kraft geben, wenn deine eigene gerade nicht reicht.
+
+Und manchmal vielleicht einfach neben dir sitzen, ohne irgendetwas reparieren zu müssen.
+
+Ich brauche dafür keine Gegenleistung.
+
+Ich brauche nicht einmal eine Beziehung.
+
+Ich möchte nur, dass du irgendwann verstehst, dass mein Dasein für dich nicht an Bedingungen geknüpft ist.
+
+Dass du dich nicht erst besser fühlen, funktionieren oder mir irgendetwas zurückgeben musst, damit ich bei dir sein darf.
+
+Vielleicht ist genau das der Punkt, den ich mich am meisten traue zu denken, aber am wenigsten traue auszusprechen:
+
+Warum lässt du mich nicht einfach für dich da sein, wenn ich doch gar nichts von dir dafür verlange?
+
+Ich will nicht deine Last übernehmen.
+
+Ich will nur manchmal meine Schulter unter einen kleinen Teil davon stellen, damit du sie für ein paar Minuten nicht ganz alleine tragen musst. 🖤`]
+]}
+];
+
+function home(){
+return `<div class="screen">
+<div class="kicker">Eine kleine Reise durch mich</div>
+<h1>Hinter den Türen</h1>
+<div class="card lead">
+Du wolltest wissen, wer ich wirklich bin.<br>
+Also habe ich aufgehört, dir nur die Seiten zu zeigen, die leicht anzusehen sind.<br>
+Hinter jeder dieser Türen wartet ein Teil von mir.<br>
+Welche du öffnest, entscheidest allein du. 🖤
+<br><br>
+Aber glaub nicht, dass du hinter diesen Türen den ganzen Patrick findest.<br>
+Das hier ist nicht meine komplette Geschichte und schon gar nicht alles, was mich ausmacht.<br>
+Es sind nur die Teile von mir, von denen ich glaube, dass sie dir vielleicht helfen können, meine Art, mein Verhalten und manche meiner Reaktionen besser zu verstehen.
+<br><br>
+Vielleicht wirst du danach manches an mir anders sehen.<br>
+Vielleicht wirst du manches immer noch nicht verstehen.<br>
+Und vielleicht gibt es Dinge, die selbst ich noch nicht vollständig verstanden habe.
+<br><br>
+Aber genau deshalb bist du hier.<br>
+Nicht um mich zu beurteilen.<br>
+Nicht um eine perfekte Version von mir kennenzulernen.<br>
+Sondern um einen Blick hinter die Stellen zu bekommen, die man sonst nicht sieht. 🖤
+</div>
+<div class="card lead">
+Es gibt keine richtige Tür.<br>
+Keine falsche Reihenfolge.<br>
+Und nichts, das du öffnen musst.<br>
+Du entscheidest selbst, wie tief du gehen möchtest. 🖤
+</div>
+<div class="doors">${doors.map((d,i)=>`<button class="door" onclick="openDoor(${i})"><span class="icon">${d.icon}</span><b>${d.title}</b><small>Öffnen</small></button>`).join("")}</div>
+</div>`;
+}
+function openDoor(i){
+const d=doors[i];
+render(`<div class="screen">
+<div class="kicker">Tür ${i+1} von ${doors.length}</div>
+<div class="card"><h2>${d.icon} ${d.title}</h2><div class="story">${d.intro}</div></div>
+<div class="card"><div class="kicker">Du entscheidest</div>
+${d.choices.map((c,j)=>`<button class="choice" onclick="choice(${i},${j})">${c[0]} ${c[1]}</button>`).join("")}
+</div>
+<button class="back" onclick="home()">← Zurück zu den Türen</button>
+</div>`);
+}
+function choice(i,j){
+const d=doors[i], c=d.choices[j];
+let extra=d.close ? `<div class="card quote">${d.close}</div>` : "";
+render(`<div class="screen">
+<div class="kicker">${d.icon} ${d.title}</div>
+<div class="card"><div class="story">${c[2]}</div></div>
+${extra}
+<div class="card" style="text-align:center">
+<button class="next" onclick="openDoor(${i})">↩ Bei dieser Tür bleiben</button>
+<button class="next" onclick="home()">🚪 Zu den anderen Türen</button>
+</div>
+</div>`);
+}
+function end(){render(`<div class="screen end"><div class="card"><h2>🖤</h2><div class="story">Du hast jetzt einige Teile von mir gesehen.
+
+Nicht alles.
+Vielleicht nicht einmal die wichtigsten.
+
+Aber genug, um zu wissen, dass hinter meinen Worten, meinem Humor, meinem Schweigen und manchmal auch meinem Chaos mehr steckt, als man von außen sehen kann.
+
+Was du daraus machst, gehört nicht mehr mir.
+
+Das war nie der Sinn.
+
+Ich wollte dir nur einmal die Möglichkeit geben, mich nicht nur zu sehen…
+
+…sondern ein kleines bisschen zu verstehen. 🖤</div><button class="next" onclick="home()">Die Türen noch einmal ansehen</button></div><p class="story">Danke, dass du hineingesehen hast, Jessi. 🖤</p></div>`)}
+function render(x){document.getElementById("app").innerHTML=x;window.scrollTo({top:0,behavior:"smooth"})}
+home();
+</script>
+</body>
+</html>
