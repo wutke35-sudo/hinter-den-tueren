@@ -451,7 +451,7 @@ render(`<div class="screen">
 <div class="card"><div class="kicker">Du entscheidest</div>
 ${d.choices.map((c,j)=>`<button class="choice" onclick="choice(${i},${j})">${c[0]} ${c[1]}</button>`).join("")}
 </div>
-<button class="back" onclick="home()">← Zurück zu den Türen</button>
+<button class="back" onclick="render(home())">← Zurück zu den Türen</button>
 </div>`);
 }
 function choice(i,j){
@@ -463,7 +463,7 @@ render(`<div class="screen">
 ${extra}
 <div class="card" style="text-align:center">
 <button class="next" onclick="openDoor(${i})">↩ Bei dieser Tür bleiben</button>
-<button class="next" onclick="home()">🚪 Zu den anderen Türen</button>
+<button class="next" onclick="render(home())">🚪 Zu den anderen Türen</button>
 </div>
 </div>`);
 }
